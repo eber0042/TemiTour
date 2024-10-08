@@ -25,8 +25,7 @@ import kotlin.system.exitProcess
 enum class State {
     TALK,          // Testing talking feature
     DISTANCE,      // Track distance of user
-    ANGLE,
-    CONSTRAINT_FOLLOW
+    ANGLE
 }
 
 @HiltViewModel
@@ -37,14 +36,13 @@ class MainViewModel @Inject constructor(
     private val ttsStatus = robotController.ttsStatus // Current speech state
     private val detectionStatus = robotController.detectionStateChangedStatus
     private val detectionData = robotController.detectionDataChangedStatus
-    private val movementStatus = robotController.movementStatusChangedStatus
 
     private val buffer = 100L
-    private var currentState = State.TALK
+    private var currentState = State.ANGLE
 
     init {
         viewModelScope.launch {
-            while (true) { // This while loop is used to refresh the state to allow for refresh
+            while(true) { // This while loop is used to refresh the state to allow for refresh
                 when (currentState) {
                     State.TALK -> { // Creating a method for getting multiple lines of dialogue to work
                         // This method will allow play once per detection
@@ -75,7 +73,8 @@ class MainViewModel @Inject constructor(
                                 if (status == DetectionStateChangedStatus.DETECTED) {
                                     isDetected = true
                                     buffer()
-                                } else {
+                                }
+                                else {
                                     isDetected = false
                                 }
                             }
@@ -94,7 +93,6 @@ class MainViewModel @Inject constructor(
                         // Ensure to cancel the monitoring job if the loop finishes
                         job.cancel()
                     }
-
                     State.ANGLE -> {
                         // This method will allow play multiple per detection
                         var isDetected = false
@@ -105,7 +103,8 @@ class MainViewModel @Inject constructor(
                                 if (status == DetectionStateChangedStatus.DETECTED) {
                                     isDetected = true
                                     buffer()
-                                } else {
+                                }
+                                else {
                                     isDetected = false
                                 }
                             }
@@ -122,31 +121,8 @@ class MainViewModel @Inject constructor(
                             conditionGate { ttsStatus.value.status != TtsRequest.Status.COMPLETED }
                         }
                         // Ensure to cancel the monitoring job if the loop finishes
-                        conditionTimer({ !isDetected }, time = 50)
+                        conditionTimer({!isDetected}, time = 50)
                         job.cancel()
-                    }
-
-                    State.CONSTRAINT_FOLLOW -> {
-                        Log.i("Angle", detectionData.value.angle.toString())
-                        val turn = 10
-
-//                        robotController.turnBy(turn, 1f, buffer)
-//                        conditionGate { movementStatus.value.status !=  MovementStatus.COMPLETE}
-//
-//                        robotController.turnBy(-turn, 1f, buffer)
-//                        conditionGate { movementStatus.value.status !=  MovementStatus.COMPLETE}
-
-//                        if (detectionData.value.angle > 0.1) {
-//                            robotController.turnBy(turn, 1f, buffer)
-//                            Log.i("HELLOO", "hello")
-//                            conditionGate { movementStatus.value.status !=  MovementStatus.COMPLETE}
-//                        }
-//                        else if (detectionData.value.angle < -0.1) {
-//                            robotController.turnBy(turn, 1f, buffer)
-//                            conditionGate { movementStatus.value.status !=  MovementStatus.COMPLETE}
-//                        } else {
-//                            // Do nothing
-//                        }
                     }
                 }
                 buffer() // Add delay to ensure system work properly

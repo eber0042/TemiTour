@@ -7,7 +7,6 @@ import com.robotemi.sdk.Robot;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnDetectionDataChangedListener;
-import com.robotemi.sdk.listeners.OnMovementStatusChangedListener;
 import com.robotemi.sdk.TtsRequest;
 import com.robotemi.sdk.model.DetectionData;
 import dagger.Module;
