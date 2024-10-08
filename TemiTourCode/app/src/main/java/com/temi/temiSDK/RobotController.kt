@@ -7,6 +7,7 @@ import com.robotemi.sdk.Robot
 import com.robotemi.sdk.listeners.OnRobotReadyListener
 import com.robotemi.sdk.listeners.OnDetectionStateChangedListener
 import com.robotemi.sdk.listeners.OnDetectionDataChangedListener
+import com.robotemi.sdk.listeners.OnMovementStatusChangedListener
 import com.robotemi.sdk.TtsRequest
 import com.robotemi.sdk.model.DetectionData
 import dagger.Module
@@ -33,6 +34,27 @@ enum class DetectionStateChangedStatus(val state: Int) { // Why is it like this?
 
 data class DetectionDataChangedStatus( val angle: Double, val distance: Double)
 
+enum class MovementType {
+    SKID_JOY,
+    TURN_BY,
+    NONE
+}
+
+enum class MovementStatus {
+    START,
+    GOING,
+    OBSTACLE_DETECTED,
+    NODE_INACTIVE,
+    CALCULATING,
+    COMPLETE,
+    ABORT
+}
+
+data class MovementStatusChangedStatus(
+    val type: MovementType,   // Use the MovementType enum
+    val status: MovementStatus  // Use the MovementStatus enum
+)
+
 @Module
 @InstallIn(SingletonComponent::class)
 object RobotModule {
@@ -45,7 +67,8 @@ class RobotController():
     OnRobotReadyListener,
     OnDetectionStateChangedListener,
     Robot.TtsListener,
-    OnDetectionDataChangedListener
+    OnDetectionDataChangedListener,
+    OnMovementStatusChangedListener
 {
     private val robot = Robot.getInstance() //This is needed to reference the data coming from Temi
 
@@ -59,11 +82,15 @@ class RobotController():
     private val _detectionDataChangedStatus = MutableStateFlow(DetectionDataChangedStatus(angle = 0.0, distance = 0.0))
     val detectionDataChangedStatus = _detectionDataChangedStatus.asStateFlow() // This can include talking state as well
 
+    private val _movementStatusChangedStatus = MutableStateFlow(MovementStatusChangedStatus(MovementType.NONE, MovementStatus.NODE_INACTIVE))
+    val movementStatusChangedStatus = _movementStatusChangedStatus.asStateFlow() // This can include talking state as well
+
     init {
         robot.addOnRobotReadyListener(this)
         robot.addTtsListener(this)
         robot.addOnDetectionStateChangedListener((this))
         robot.addOnDetectionDataChangedListener(this)
+        robot.addOnMovementStatusChangedListener(this)
     }
     //********************************* General Functions
     suspend fun speak(speech: String, buffer: Long) {
@@ -77,6 +104,12 @@ class RobotController():
         delay(buffer)
     }
 
+    suspend fun turnBy(degree: Int, speed: Float = 1f, buffer: Long) {
+        delay(buffer)
+        robot.turnBy(degree, speed)
+        delay(buffer)
+    }
+
     //********************************* Override is below
     /**
      * Called when connection with robot was established.
@@ -87,7 +120,7 @@ class RobotController():
         if (!isReady) return
         robot.setDetectionModeOn(on = true, distance = 2.0f) // Set how far it can detect stuff
         robot.setKioskModeOn(on = false)
-        Log.d("DetectOn", robot.detectionModeOn.toString()) // This line does not seem to have the intended effect
+        robot.turnBy(180)
     }
 
     override fun onTtsStatusChanged(ttsRequest: TtsRequest) {
@@ -106,6 +139,31 @@ class RobotController():
     override fun onDetectionDataChanged(detectionData: DetectionData) {
         _detectionDataChangedStatus.update {
             DetectionDataChangedStatus(angle = detectionData.angle, distance = detectionData.distance)
+        }
+    }
+
+    override fun onMovementStatusChanged(type: String, status: String) {
+        _movementStatusChangedStatus.update { currentStatus ->
+            // Convert the type and status to their respective enums
+            val movementType = when (type) {
+                "skidJoy" -> MovementType.SKID_JOY
+                "turnBy" -> MovementType.TURN_BY
+                else -> return@update currentStatus // If the type is unknown, return the current state
+            }
+
+            val movementStatus = when (status) {
+                "start" -> MovementStatus.START
+                "going" -> MovementStatus.GOING
+                "obstacle detected" -> MovementStatus.OBSTACLE_DETECTED
+                "node inactive" -> MovementStatus.NODE_INACTIVE
+                "calculating" -> MovementStatus.CALCULATING
+                "complete" -> MovementStatus.COMPLETE
+                "abort" -> MovementStatus.ABORT
+                else -> return@update currentStatus // If the status is unknown, return the current state
+            }
+
+            // Create a new MovementStatusChangedStatus from the enums
+            MovementStatusChangedStatus(movementType, movementStatus)
         }
     }
 
