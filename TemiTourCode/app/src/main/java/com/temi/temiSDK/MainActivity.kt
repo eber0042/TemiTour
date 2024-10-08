@@ -79,12 +79,12 @@ fun Greeting() {
             }
         }.build()
 
-    val permissionsLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { success: Boolean ->
-        if (success) Log.i("success", "success")
-        else Log.i("fail", "fail")
-    }
+//    val permissionsLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.RequestPermission()
+//    ) { success: Boolean ->
+//        if (success) Log.i("success", "success")
+//        else Log.i("fail", "fail")
+//    }
 
 // Trying to get permissions to work
 //    LaunchedEffect(true) {
