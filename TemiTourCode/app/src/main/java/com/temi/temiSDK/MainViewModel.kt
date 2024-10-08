@@ -25,7 +25,8 @@ import kotlin.system.exitProcess
 enum class State {
     TALK,          // Testing talking feature
     DISTANCE,      // Track distance of user
-    ANGLE
+    ANGLE,
+    CONSTRAINT_FOLLOW
 }
 
 @HiltViewModel
@@ -36,6 +37,7 @@ class MainViewModel @Inject constructor(
     private val ttsStatus = robotController.ttsStatus // Current speech state
     private val detectionStatus = robotController.detectionStateChangedStatus
     private val detectionData = robotController.detectionDataChangedStatus
+    private val movementStatus = robotController.movementStatusChangedStatus
 
     private val buffer = 100L
     private var currentState = State.ANGLE
@@ -123,6 +125,27 @@ class MainViewModel @Inject constructor(
                         // Ensure to cancel the monitoring job if the loop finishes
                         conditionTimer({!isDetected}, time = 50)
                         job.cancel()
+                    }
+
+                    State.CONSTRAINT_FOLLOW -> {
+                        Log.i("Angle", detectionData.value.angle.toString())
+                        val turn = 10
+//                        robotController.turnBy(turn, 1f, buffer)
+//                        conditionGate { movementStatus.value.status !=  MovementStatus.COMPLETE}
+//
+//                        robotController.turnBy(-turn, 1f, buffer)
+//                        conditionGate { movementStatus.value.status !=  MovementStatus.COMPLETE}
+//                        if (detectionData.value.angle > 0.1) {
+//                            robotController.turnBy(turn, 1f, buffer)
+//                            Log.i("HELLOO", "hello")
+//                            conditionGate { movementStatus.value.status !=  MovementStatus.COMPLETE}
+//                        }
+//                        else if (detectionData.value.angle < -0.1) {
+//                            robotController.turnBy(turn, 1f, buffer)
+//                            conditionGate { movementStatus.value.status !=  MovementStatus.COMPLETE}
+//                        } else {
+//                            // Do nothing
+//                        }
                     }
                 }
                 buffer() // Add delay to ensure system work properly
