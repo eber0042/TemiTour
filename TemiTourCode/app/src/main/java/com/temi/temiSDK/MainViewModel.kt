@@ -49,11 +49,14 @@ class MainViewModel @Inject constructor(
 
     private val buffer = 100L
     private var currentState = State.DETECTION_LOGIC
-    private val defaultAngle = 90.0 // 180 + round(Math.toDegrees(robotController.getPositionYaw().toDouble())) // Default angle temi will go to.
+    private val defaultAngle = 120.0 // 180 + round(Math.toDegrees(robotController.getPositionYaw().toDouble())) // Default angle temi will go to.
     private var userRelativeDirection = Direction.DEFAULT
 
-    private var previousUserAngle = 0
-    private var currentUserAngle = 0
+    private var previousUserAngle = 0.0
+    private var currentUserAngle = 0.0
+
+    private var previousUserDistance = 0.0
+    private var currentUserDistance = 0.0
 
     init {
         viewModelScope.launch {
@@ -189,18 +192,18 @@ class MainViewModel @Inject constructor(
 
                         Log.i("Movement", movementStatus.value.status.toString())
 
-                        if (isDetected && (turnAngle > 6 || turnAngle < -6) && (currentAngle < defaultAngle + 90 && currentAngle > defaultAngle - 90)) {
+                        if (isDetected && (turnAngle > 10 || turnAngle < -10) && (currentAngle < defaultAngle + 90 && currentAngle > defaultAngle - 90)) {
                             robotController.turnBy(turnAngle, 1f, buffer)
                             // The conditionGate makes this system more janky, not good to use in this case
 //                            conditionGate ({ movementStatus.value.status !in listOf(MovementStatus.COMPLETE,MovementStatus.ABORT) })
                         } else if (isLost && (currentAngle < defaultAngle + 90 && currentAngle > defaultAngle - 90)) {
                             when (userRelativeDirection) {
                                 Direction.LEFT  -> {
-                                    robotController.turnBy(90, 0.25f, buffer)
+                                    robotController.turnBy(90, 0.1f, buffer)
                                     userRelativeDirection = Direction.DEFAULT
                                 }
                                 Direction.RIGHT -> {
-                                    robotController.turnBy(-90, 0.25f, buffer)
+                                    robotController.turnBy(-90, 0.1f, buffer)
                                     userRelativeDirection = Direction.DEFAULT
                                 }
                                 else -> {
@@ -264,27 +267,102 @@ class MainViewModel @Inject constructor(
                             }
                         }
 
-                        val previousUserAngle = currentUserAngle
-                        val currentUserAngle = detectionData.value.angle
+                        previousUserAngle = currentUserAngle
+                        previousUserDistance = currentUserDistance
+                        delay(500L)
+                        currentUserAngle = detectionData.value.angle
+                        currentUserDistance = detectionData.value.distance
 
-                        if(isDetected) {
+
+                            Log.i("currentUserAngle", (currentUserDistance).toString())
+                            Log.i("previousUserAngle", (previousUserDistance).toString())
+                            Log.i("Direction", (currentUserDistance - previousUserDistance).toString())
+
+                        if(isDetected) { //&& previousUserDistance != 0.0 && previousUserDistance == currentUserDistance) {
+                            // logic for close or far position
                             when {
-                                currentUserAngle > 0.1 -> {
-                                    robotController.speak("You are to my left", buffer)
-                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
-                                }
-                                currentUserAngle < -0.1 -> {
-                                    robotController.speak("You are to my right", buffer)
-                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
-                                }
-                                else -> {
-                                    robotController.speak("You are in front of me", buffer)
-                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
-                                }
+                                // System for detecting how far
                             }
+//                                currentUserDistance < 0.75 -> {
+//                                    robotController.speak("You are close", buffer)
+//                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+//                                }
+//                                currentUserDistance < 1.35 -> {
+//                                    robotController.speak("You are midrange", buffer)
+//                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+//                                }
+//                                else -> {
+//                                    robotController.speak("You are far", buffer)
+//                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+//                                }
+//                            }
+
+//                            Log.i("currentUserAngle", (currentUserDistance).toString())
+//                            Log.i("previousUserAngle", (previousUserDistance).toString())
+//                            Log.i("Direction", (currentUserDistance - previousUserDistance).toString())
+//                            when {
+//                                currentUserDistance - previousUserDistance > 0.125 -> {
+//                                    Log.i("Type", "going towards")
+////                                    robotController.speak("You are going left to right", buffer)
+////                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+//                                }
+//                                currentUserDistance - previousUserDistance < -0.125 -> {
+//                                    Log.i("Type", "going away")
+////                                    robotController.speak("You are going left to right", buffer)
+////                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+//                                }
+//                                else -> {
+//                                    Log.i("Type", "no change")
+////                                    robotController.speak("You did not move", buffer)
+////                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+//                                }
+//                            }
+//                        }  else {
+//                            currentUserDistance = 0.0
                         }
 
-                        conditionTimer({!isDetected}, time = 50)
+                        if(isDetected && previousUserAngle != 0.0 && previousUserAngle == currentUserAngle && false) {
+                            // logic for left right position
+//                            when {
+//                                currentUserAngle > 0.1 -> {
+//                                    robotController.speak("You are to my left", buffer)
+//                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+//                                }
+//                                currentUserAngle < -0.1 -> {
+//                                    robotController.speak("You are to my right", buffer)
+//                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+//                                }
+//                                else -> {
+//                                    robotController.speak("You are in front of me", buffer)
+//                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+//                                }
+//                            }
+
+                            Log.i("currentUserAngle", (currentUserAngle).toString())
+                            Log.i("previousUserAngle", (previousUserAngle).toString())
+                            Log.i("Direction", (currentUserAngle - previousUserAngle).toString())
+                            when {
+                                currentUserAngle - previousUserAngle > 0.125 -> {
+                                    Log.i("Type", "left to right")
+//                                    robotController.speak("You are going left to right", buffer)
+//                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+                                }
+                                currentUserAngle - previousUserAngle < -0.125 -> {
+                                    Log.i("Type", "right to left")
+//                                    robotController.speak("You are going left to right", buffer)
+//                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+                                }
+                                else -> {
+                                    Log.i("Type", "no change")
+//                                    robotController.speak("You did not move", buffer)
+//                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+                                }
+                            }
+                        }  else {
+                            currentUserAngle = 0.0
+                        }
+
+//                        conditionTimer({!isDetected}, time = 50)
 
                         // Ensure to cancel the monitoring job if the loop finishes
                         job.cancel()

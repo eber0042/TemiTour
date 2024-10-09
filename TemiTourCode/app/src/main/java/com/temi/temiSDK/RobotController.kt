@@ -131,7 +131,7 @@ class RobotController():
     }
 
     override fun onTtsStatusChanged(ttsRequest: TtsRequest) {
-        Log.i("onTtsStatusChanged", "status: ${ttsRequest.status}")
+//        Log.i("onTtsStatusChanged", "status: ${ttsRequest.status}")
         _ttsStatus.update {
             TtsStatus(status = ttsRequest.status)
         }
@@ -139,7 +139,7 @@ class RobotController():
 
     override fun onDetectionStateChanged(state: Int) {
         _detectionStateChangedStatus.update {
-            Log.d("DetectionState", "Detection state changed: ${DetectionStateChangedStatus.fromState(state)}")
+//            Log.d("DetectionState", "Detection state changed: ${DetectionStateChangedStatus.fromState(state)}")
             DetectionStateChangedStatus.fromState(state = state) ?: return@update it
         }
     }
