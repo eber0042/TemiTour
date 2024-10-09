@@ -48,7 +48,7 @@ class MainViewModel @Inject constructor(
 
     private val buffer = 100L
     private var currentState = State.CONSTRAINT_FOLLOW
-    private val defaultAngle = round(Math.toDegrees(robotController.getPositionYaw().toDouble()))
+    private val defaultAngle = 180 + round(Math.toDegrees(robotController.getPositionYaw().toDouble())) // Default angle temi will go to.
     private var userRelativeDirection = Direction.DEFAULT
 
     init {
@@ -185,29 +185,30 @@ class MainViewModel @Inject constructor(
 
                         Log.i("Movement", movementStatus.value.status.toString())
 
-//                        if ()
-//                        robotController.turnBy(turnAngle, 1f, buffer)
-//                        conditionGate ({ movementStatus.value.status !in listOf(MovementStatus.COMPLETE,MovementStatus.ABORT) }, movementStatus.value.status.toString())
-
-                        if (isDetected && (turnAngle > 6 || turnAngle < -6)) {
-                            robotController.turnBy(turnAngle, 1f, buffer)
-                            // The conditionGate makes this system more janky, not good to use in this case
-//                            conditionGate ({ movementStatus.value.status !in listOf(MovementStatus.COMPLETE,MovementStatus.ABORT) })
-                        } else if (isLost) {
-                            when (userRelativeDirection) {
-                                Direction.LEFT  -> {
-                                    robotController.turnBy(90, 0.25f, buffer)
-                                    userRelativeDirection = Direction.DEFAULT
-                                }
-                                Direction.RIGHT -> {
-                                    robotController.turnBy(-90, 0.25f, buffer)
-                                    userRelativeDirection = Direction.DEFAULT
-                                }
-                                else -> {
-                                    // Do nothing
-                                }
-                            }
+                        if (defaultAngle != currentAngle) {
+                            robotController.turnBy((defaultAngle - currentAngle).toInt(), 1f, buffer)
+                            conditionGate ({ movementStatus.value.status !in listOf(MovementStatus.COMPLETE,MovementStatus.ABORT) }, movementStatus.value.status.toString())
                         }
+
+//                        if (isDetected && (turnAngle > 6 || turnAngle < -6)) {
+//                            robotController.turnBy(turnAngle, 1f, buffer)
+//                            // The conditionGate makes this system more janky, not good to use in this case
+////                            conditionGate ({ movementStatus.value.status !in listOf(MovementStatus.COMPLETE,MovementStatus.ABORT) })
+//                        } else if (isLost) {
+//                            when (userRelativeDirection) {
+//                                Direction.LEFT  -> {
+//                                    robotController.turnBy(90, 0.25f, buffer)
+//                                    userRelativeDirection = Direction.DEFAULT
+//                                }
+//                                Direction.RIGHT -> {
+//                                    robotController.turnBy(-90, 0.25f, buffer)
+//                                    userRelativeDirection = Direction.DEFAULT
+//                                }
+//                                else -> {
+//                                    // Do nothing
+//                                }
+//                            }
+//                        }
                         // Ensure to cancel the monitoring job if the loop finishes
                         job.cancel()
                     }
