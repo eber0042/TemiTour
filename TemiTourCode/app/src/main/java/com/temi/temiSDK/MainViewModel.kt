@@ -48,9 +48,12 @@ class MainViewModel @Inject constructor(
     private val movementStatus = robotController.movementStatusChangedStatus
 
     private val buffer = 100L
-    private var currentState = State.CONSTRAINT_FOLLOW
+    private var currentState = State.DETECTION_LOGIC
     private val defaultAngle = 90.0 // 180 + round(Math.toDegrees(robotController.getPositionYaw().toDouble())) // Default angle temi will go to.
     private var userRelativeDirection = Direction.DEFAULT
+
+    private var previousUserAngle = 0
+    private var currentUserAngle = 0
 
     init {
         viewModelScope.launch {
@@ -243,7 +246,52 @@ class MainViewModel @Inject constructor(
                         // Ensure to cancel the monitoring job if the loop finishes
                         job.cancel()
                     }
-                    State.DETECTION_LOGIC -> TODO()
+                    State.DETECTION_LOGIC -> {
+
+                        // This method will allow play multiple per detection
+                        var isDetected = false
+
+                        // Launch a coroutine to monitor detectionStatus
+                        val job = launch {
+                            detectionStatus.collect { status ->
+                                if (status == DetectionStateChangedStatus.DETECTED) {
+                                    isDetected = true
+                                    buffer()
+                                }
+                                else {
+                                    isDetected = false
+                                }
+                            }
+                        }
+
+                        val previousUserAngle = currentUserAngle
+                        val currentUserAngle = detectionData.value.angle
+
+                        if(isDetected) {
+                            when {
+                                currentUserAngle > 0.1 -> {
+                                    robotController.speak("You are to my left", buffer)
+                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+                                }
+                                currentUserAngle < -0.1 -> {
+                                    robotController.speak("You are to my right", buffer)
+                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+                                }
+                                else -> {
+                                    robotController.speak("You are in front of me", buffer)
+                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+                                }
+                            }
+                        }
+
+                        conditionTimer({!isDetected}, time = 50)
+
+                        // Ensure to cancel the monitoring job if the loop finishes
+                        job.cancel()
+
+
+
+                    }
                 }
                 buffer() // Add delay to ensure system work properly
             }
