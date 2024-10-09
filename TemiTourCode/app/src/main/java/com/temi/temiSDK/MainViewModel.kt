@@ -30,6 +30,12 @@ enum class State {
     NULL
 }
 
+enum class Direction {
+    LEFT,
+    RIGHT,
+    DEFAULT
+}
+
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val robotController: RobotController
@@ -41,7 +47,9 @@ class MainViewModel @Inject constructor(
     private val movementStatus = robotController.movementStatusChangedStatus
 
     private val buffer = 100L
-    private var currentState = State.NULL
+    private var currentState = State.CONSTRAINT_FOLLOW
+    private val defaultAngle = round(Math.toDegrees(robotController.getPositionYaw().toDouble()))
+    private var userRelativeDirection = Direction.DEFAULT
 
     init {
         viewModelScope.launch {
@@ -127,36 +135,78 @@ class MainViewModel @Inject constructor(
                         job.cancel()
                     }
                     State.CONSTRAINT_FOLLOW -> {
-                        val currentAngle = round(Math.toDegrees(robotController.getPositionYaw().toDouble()))
-                        val userRelativeAngle = round(Math.toDegrees(detectionData.value.angle))/1.85
+                        val currentAngle = 180 + round(Math.toDegrees(robotController.getPositionYaw().toDouble()))
+                        val userRelativeAngle = round(Math.toDegrees(detectionData.value.angle))/1.70
                         val turnAngle = (userRelativeAngle).toInt()
 
                         Log.i("currentAngle", currentAngle.toString())
                         Log.i("userRelativeAngle", userRelativeAngle.toString())
                         Log.i("new", turnAngle.toString())
 
+                        // Use this to determine which direction the user was lost in
+                        when {
+                            userRelativeAngle > 0 -> {
+                                userRelativeDirection = Direction.LEFT
+                            }
+                            userRelativeAngle < 0 -> {
+                                userRelativeDirection = Direction.RIGHT
+                            }
+                            else -> {
+                                // Do nothing
+                            }
+                        }
 
                         // This method will allow play multiple per detection
                         var isDetected = false
+                        var isLost = false
 
                         // Launch a coroutine to monitor detectionStatus
                         val job = launch {
                             detectionStatus.collect { status ->
-                                if (status == DetectionStateChangedStatus.DETECTED) {
-                                    isDetected = true
-                                    buffer()
-                                }
-                                else {
-                                    isDetected = false
+                                when (status) {
+                                    DetectionStateChangedStatus.DETECTED -> {
+                                        isDetected = true
+                                        isLost = false
+                                        buffer()
+                                    }
+                                    DetectionStateChangedStatus.LOST -> {
+                                        isDetected = false
+                                        isLost = true
+                                        buffer()
+                                    }
+                                    else -> {
+                                        isDetected = false
+                                        isLost = false
+                                        buffer()
+                                    }
                                 }
                             }
                         }
 
                         Log.i("Movement", movementStatus.value.status.toString())
 
+//                        if ()
+//                        robotController.turnBy(turnAngle, 1f, buffer)
+//                        conditionGate ({ movementStatus.value.status !in listOf(MovementStatus.COMPLETE,MovementStatus.ABORT) }, movementStatus.value.status.toString())
+
                         if (isDetected && (turnAngle > 6 || turnAngle < -6)) {
                             robotController.turnBy(turnAngle, 1f, buffer)
-//                            conditionGate { movementStatus.value.status !=  MovementStatus.COMPLETE}
+                            // The conditionGate makes this system more janky, not good to use in this case
+//                            conditionGate ({ movementStatus.value.status !in listOf(MovementStatus.COMPLETE,MovementStatus.ABORT) })
+                        } else if (isLost) {
+                            when (userRelativeDirection) {
+                                Direction.LEFT  -> {
+                                    robotController.turnBy(90, 0.25f, buffer)
+                                    userRelativeDirection = Direction.DEFAULT
+                                }
+                                Direction.RIGHT -> {
+                                    robotController.turnBy(-90, 0.25f, buffer)
+                                    userRelativeDirection = Direction.DEFAULT
+                                }
+                                else -> {
+                                    // Do nothing
+                                }
+                            }
                         }
                         // Ensure to cancel the monitoring job if the loop finishes
                         job.cancel()
