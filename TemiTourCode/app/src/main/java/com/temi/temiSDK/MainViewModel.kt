@@ -27,7 +27,8 @@ enum class State {
     DISTANCE,      // Track distance of user
     ANGLE,
     CONSTRAINT_FOLLOW,
-    NULL
+    TEST_MOVEMENT,
+    DETECTION_LOGIC
 }
 
 enum class Direction {
@@ -205,14 +206,14 @@ class MainViewModel @Inject constructor(
                             }
                         } else if (!isDetected && !isLost) {
                             if (defaultAngle != currentAngle) {
-                                robotController.turnBy((defaultAngle - currentAngle).toInt(), 1f, buffer)
+                                robotController.turnBy(getDirectedAngle(defaultAngle, currentAngle).toInt(), 1f, buffer)
                                 conditionGate ({ movementStatus.value.status !in listOf(MovementStatus.COMPLETE,MovementStatus.ABORT) }, movementStatus.value.status.toString())
                             }
                         }
                         // Ensure to cancel the monitoring job if the loop finishes
                         job.cancel()
                     }
-                    State.NULL -> {
+                    State.TEST_MOVEMENT -> {
                         // This method will allow play multiple per detection
                         var isDetected = false
 
@@ -242,6 +243,7 @@ class MainViewModel @Inject constructor(
                         // Ensure to cancel the monitoring job if the loop finishes
                         job.cancel()
                     }
+                    State.DETECTION_LOGIC -> TODO()
                 }
                 buffer() // Add delay to ensure system work properly
             }
@@ -273,6 +275,14 @@ class MainViewModel @Inject constructor(
             buffer() // Pause between checks to prevent busy-waiting
         }
         Log.i("ConditionGate", "End")
+    }
+
+    private fun getDirectedAngle(a1: Double, a2: Double): Double {
+        var difference = a1 - a2
+        // Normalize the angle to keep it between -180 and 180 degrees
+        if (difference > 180) difference -= 360
+        if (difference < -180) difference += 360
+        return difference
     }
     //**************************Sequence Functions
 

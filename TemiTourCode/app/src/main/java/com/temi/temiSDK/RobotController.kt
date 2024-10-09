@@ -128,7 +128,6 @@ class RobotController():
         if (!isReady) return
         robot.setDetectionModeOn(on = true, distance = 2.0f) // Set how far it can detect stuff
         robot.setKioskModeOn(on = false)
-        robot.detectionModeOn
     }
 
     override fun onTtsStatusChanged(ttsRequest: TtsRequest) {
