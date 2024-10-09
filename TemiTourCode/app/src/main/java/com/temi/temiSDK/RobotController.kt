@@ -3,6 +3,7 @@ package com.temi.temiSDK
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.robotemi.sdk.ISdkService
 import com.robotemi.sdk.Robot
 import com.robotemi.sdk.listeners.OnRobotReadyListener
 import com.robotemi.sdk.listeners.OnDetectionStateChangedListener
@@ -18,6 +19,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.lang.reflect.Array.set
 import javax.inject.Singleton
 
 data class TtsStatus(val status: TtsRequest.Status)
@@ -89,11 +91,13 @@ class RobotController():
         robot.addOnDetectionStateChangedListener((this))
         robot.addOnDetectionDataChangedListener(this)
         robot.addOnMovementStatusChangedListener(this)
+
+//        robot.setTrackUserOn()
     }
     //********************************* General Functions
     suspend fun speak(speech: String, buffer: Long) {
         delay(buffer)
-        var request = TtsRequest.create(
+        val request = TtsRequest.create(
             speech = speech,
             isShowOnConversationLayer = true,
             showAnimationOnly = true,
@@ -107,6 +111,11 @@ class RobotController():
         robot.turnBy(degree, speed)
         delay(buffer)
     }
+    //********************************* General Data
+    fun getPositionYaw(): Float
+    {
+        return robot.getPosition().yaw
+    }
 
     //********************************* Override is below
     /**
@@ -115,10 +124,11 @@ class RobotController():
      * @param isReady `true` when connection is open. `false` otherwise.
      */
     override fun onRobotReady(isReady: Boolean) {
+
         if (!isReady) return
         robot.setDetectionModeOn(on = true, distance = 2.0f) // Set how far it can detect stuff
         robot.setKioskModeOn(on = false)
-        Log.d("DetectOn", robot.detectionModeOn.toString()) // This line does not seem to have the intended effect
+        robot.detectionModeOn
     }
 
     override fun onTtsStatusChanged(ttsRequest: TtsRequest) {
@@ -130,6 +140,7 @@ class RobotController():
 
     override fun onDetectionStateChanged(state: Int) {
         _detectionStateChangedStatus.update {
+            Log.d("DetectionState", "Detection state changed: ${DetectionStateChangedStatus.fromState(state)}")
             DetectionStateChangedStatus.fromState(state = state) ?: return@update it
         }
     }
@@ -162,5 +173,4 @@ class RobotController():
             MovementStatusChangedStatus(movementType, movementStatus)
         }
     }
-
 }

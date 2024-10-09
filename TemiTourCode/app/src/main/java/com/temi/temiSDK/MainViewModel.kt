@@ -26,7 +26,8 @@ enum class State {
     TALK,          // Testing talking feature
     DISTANCE,      // Track distance of user
     ANGLE,
-    CONSTRAINT_FOLLOW
+    CONSTRAINT_FOLLOW,
+    NULL
 }
 
 @HiltViewModel
@@ -40,7 +41,7 @@ class MainViewModel @Inject constructor(
     private val movementStatus = robotController.movementStatusChangedStatus
 
     private val buffer = 100L
-    private var currentState = State.ANGLE
+    private var currentState = State.NULL
 
     init {
         viewModelScope.launch {
@@ -57,14 +58,13 @@ class MainViewModel @Inject constructor(
                                     "Hi there, I am Temi. What can I do for you today?",
                                     buffer
                                 )
-                                conditionGate { ttsStatus.value.status != TtsRequest.Status.COMPLETED }
+                                conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
 
                                 robotController.speak("Wow, that is really interesting", buffer)
-                                conditionGate { ttsStatus.value.status != TtsRequest.Status.COMPLETED }
+                                conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
                             }
                         }
                     }
-
                     State.DISTANCE -> { // Used to test the distance feature of Temi
                         // This method will allow play multiple per detection
                         var isDetected = false
@@ -90,7 +90,7 @@ class MainViewModel @Inject constructor(
                                 "You are " + detectionData.value.distance.toString() + " meters away from me",
                                 buffer
                             )
-                            conditionGate { ttsStatus.value.status != TtsRequest.Status.COMPLETED }
+                            conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
                         }
                         // Ensure to cancel the monitoring job if the loop finishes
                         job.cancel()
@@ -120,32 +120,76 @@ class MainViewModel @Inject constructor(
                                 "You are " + detectionData.value.angle.toString() + " degrees from my normal",
                                 buffer
                             )
-                            conditionGate { ttsStatus.value.status != TtsRequest.Status.COMPLETED }
+                            conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
                         }
                         // Ensure to cancel the monitoring job if the loop finishes
                         conditionTimer({!isDetected}, time = 50)
                         job.cancel()
                     }
-
                     State.CONSTRAINT_FOLLOW -> {
-                        Log.i("Angle", detectionData.value.angle.toString())
-                        val turn = 10
-//                        robotController.turnBy(turn, 1f, buffer)
-//                        conditionGate { movementStatus.value.status !=  MovementStatus.COMPLETE}
-//
-//                        robotController.turnBy(-turn, 1f, buffer)
-//                        conditionGate { movementStatus.value.status !=  MovementStatus.COMPLETE}
-//                        if (detectionData.value.angle > 0.1) {
-//                            robotController.turnBy(turn, 1f, buffer)
-//                            Log.i("HELLOO", "hello")
+                        val currentAngle = round(Math.toDegrees(robotController.getPositionYaw().toDouble()))
+                        val userRelativeAngle = round(Math.toDegrees(detectionData.value.angle))/1.85
+                        val turnAngle = (userRelativeAngle).toInt()
+
+                        Log.i("currentAngle", currentAngle.toString())
+                        Log.i("userRelativeAngle", userRelativeAngle.toString())
+                        Log.i("new", turnAngle.toString())
+
+
+                        // This method will allow play multiple per detection
+                        var isDetected = false
+
+                        // Launch a coroutine to monitor detectionStatus
+                        val job = launch {
+                            detectionStatus.collect { status ->
+                                if (status == DetectionStateChangedStatus.DETECTED) {
+                                    isDetected = true
+                                    buffer()
+                                }
+                                else {
+                                    isDetected = false
+                                }
+                            }
+                        }
+
+                        Log.i("Movement", movementStatus.value.status.toString())
+
+                        if (isDetected && (turnAngle > 6 || turnAngle < -6)) {
+                            robotController.turnBy(turnAngle, 1f, buffer)
 //                            conditionGate { movementStatus.value.status !=  MovementStatus.COMPLETE}
-//                        }
-//                        else if (detectionData.value.angle < -0.1) {
-//                            robotController.turnBy(turn, 1f, buffer)
-//                            conditionGate { movementStatus.value.status !=  MovementStatus.COMPLETE}
-//                        } else {
-//                            // Do nothing
-//                        }
+                        }
+                        // Ensure to cancel the monitoring job if the loop finishes
+                        job.cancel()
+                    }
+                    State.NULL -> {
+                        // This method will allow play multiple per detection
+                        var isDetected = false
+
+                        // Launch a coroutine to monitor detectionStatus
+                        val job = launch {
+                            detectionStatus.collect { status ->
+                                if (status == DetectionStateChangedStatus.DETECTED) {
+                                    isDetected = true
+                                    buffer()
+                                }
+                                else {
+                                    isDetected = false
+                                }
+                            }
+                        }
+
+                        Log.i("Movement", movementStatus.value.status.toString())
+
+                        if (isDetected) {
+                        }
+                        else {
+                            robotController.turnBy(50, 1f, buffer)
+                            conditionGate ({ movementStatus.value.status !=  MovementStatus.COMPLETE })
+                            robotController.turnBy(-50, 1f, buffer)
+                            conditionGate ({ movementStatus.value.status !=  MovementStatus.COMPLETE })
+                        }
+                        // Ensure to cancel the monitoring job if the loop finishes
+                        job.cancel()
                     }
                 }
                 buffer() // Add delay to ensure system work properly
@@ -171,10 +215,10 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private suspend fun conditionGate(trigger: () -> Boolean) {
+    private suspend fun conditionGate(trigger: () -> Boolean, log: String = "Null") {
         // Loop until the trigger condition returns false
         while (trigger()) {
-//            Log.i("ConditionGate", "Trigger: ${trigger()}")
+            Log.i("ConditionGate", "Trigger: $log")
             buffer() // Pause between checks to prevent busy-waiting
         }
         Log.i("ConditionGate", "End")
