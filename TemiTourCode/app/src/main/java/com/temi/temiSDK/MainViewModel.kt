@@ -260,8 +260,7 @@ class MainViewModel @Inject constructor(
                                 if (status == DetectionStateChangedStatus.DETECTED) {
                                     isDetected = true
                                     buffer()
-                                }
-                                else {
+                                } else {
                                     isDetected = false
                                 }
                             }
@@ -274,11 +273,11 @@ class MainViewModel @Inject constructor(
                         currentUserDistance = detectionData.value.distance
 
 
-                            Log.i("currentUserAngle", (currentUserDistance).toString())
-                            Log.i("previousUserAngle", (previousUserDistance).toString())
-                            Log.i("Direction", (currentUserDistance - previousUserDistance).toString())
+//                        Log.i("currentUserAngle", (currentUserDistance).toString())
+//                        Log.i("previousUserAngle", (previousUserDistance).toString())
+//                        Log.i("Direction", (currentUserDistance - previousUserDistance).toString())
 
-                        if(isDetected) { //&& previousUserDistance != 0.0 && previousUserDistance == currentUserDistance) {
+                        if (isDetected) { //&& previousUserDistance != 0.0 && previousUserDistance == currentUserDistance) {
                             // logic for close or far position
                             when {
                                 // System for detecting how far
@@ -297,29 +296,30 @@ class MainViewModel @Inject constructor(
 //                                }
 //                            }
 
-//                            Log.i("currentUserAngle", (currentUserDistance).toString())
-//                            Log.i("previousUserAngle", (previousUserDistance).toString())
-//                            Log.i("Direction", (currentUserDistance - previousUserDistance).toString())
-//                            when {
-//                                currentUserDistance - previousUserDistance > 0.125 -> {
-//                                    Log.i("Type", "going towards")
-////                                    robotController.speak("You are going left to right", buffer)
-////                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
-//                                }
-//                                currentUserDistance - previousUserDistance < -0.125 -> {
-//                                    Log.i("Type", "going away")
-////                                    robotController.speak("You are going left to right", buffer)
-////                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
-//                                }
-//                                else -> {
-//                                    Log.i("Type", "no change")
-////                                    robotController.speak("You did not move", buffer)
-////                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
-//                                }
-//                            }
-//                        }  else {
-//                            currentUserDistance = 0.0
-                        }
+                            Log.i("currentUserAngle", (currentUserDistance).toString())
+                            Log.i("previousUserAngle", (previousUserDistance).toString())
+                            Log.i("Direction", (currentUserDistance - previousUserDistance).toString())
+                            when {
+                                currentUserDistance - previousUserDistance > 0.04 -> {
+                                    Log.i("Type", "going away")
+//                                    robotController.speak("You are going left to right", buffer)
+//                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+                                }
+                                currentUserDistance - previousUserDistance < -0.04 -> {
+                                    Log.i("Type", "going towards")
+//                                    robotController.speak("You are going left to right", buffer)
+//                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+                                }
+                                else -> {
+                                    Log.i("Type", "no change")
+//                                    robotController.speak("You did not move", buffer)
+//                                    conditionGate ({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+                                }
+                            }
+                        }  else {
+                            currentUserDistance = 0.0
+                    }
+
 
                         if(isDetected && previousUserAngle != 0.0 && previousUserAngle == currentUserAngle && false) {
                             // logic for left right position
