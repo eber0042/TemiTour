@@ -184,9 +184,9 @@ class MainViewModel @Inject constructor(
                         }
                         else {
                             robotController.turnBy(50, 1f, buffer)
-                            conditionGate ({ movementStatus.value.status !=  MovementStatus.COMPLETE })
+                            conditionGate ({ movementStatus.value.status !in listOf(MovementStatus.COMPLETE,MovementStatus.ABORT) }, movementStatus.value.status.toString())
                             robotController.turnBy(-50, 1f, buffer)
-                            conditionGate ({ movementStatus.value.status !=  MovementStatus.COMPLETE })
+                            conditionGate ({ movementStatus.value.status !in listOf(MovementStatus.COMPLETE,MovementStatus.ABORT) }, movementStatus.value.status.toString())
                         }
                         // Ensure to cancel the monitoring job if the loop finishes
                         job.cancel()
