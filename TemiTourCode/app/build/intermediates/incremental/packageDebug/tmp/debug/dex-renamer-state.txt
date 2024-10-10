@@ -1,11 +1,11 @@
-#Wed Oct 09 17:34:19 SGT 2024
-base.0=C\:\\Users\\nypro\\OneDrive\\Documents\\GitHub\\TemiTour\\TemiTourCode\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
-base.1=C\:\\Users\\nypro\\OneDrive\\Documents\\GitHub\\TemiTour\\TemiTourCode\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
-base.2=C\:\\Users\\nypro\\OneDrive\\Documents\\GitHub\\TemiTour\\TemiTourCode\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\10\\classes.dex
-base.3=C\:\\Users\\nypro\\OneDrive\\Documents\\GitHub\\TemiTour\\TemiTourCode\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\4\\classes.dex
-base.4=C\:\\Users\\nypro\\OneDrive\\Documents\\GitHub\\TemiTour\\TemiTourCode\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\5\\classes.dex
-base.5=C\:\\Users\\nypro\\OneDrive\\Documents\\GitHub\\TemiTour\\TemiTourCode\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\7\\classes.dex
-base.6=C\:\\Users\\nypro\\OneDrive\\Documents\\GitHub\\TemiTour\\TemiTourCode\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
+#Thu Oct 10 10:24:23 SGT 2024
+base.0=C\:\\Users\\RIG\\Documents\\GitHub\\TemiTour\\TemiTourCode\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
+base.1=C\:\\Users\\RIG\\Documents\\GitHub\\TemiTour\\TemiTourCode\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
+base.2=C\:\\Users\\RIG\\Documents\\GitHub\\TemiTour\\TemiTourCode\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\10\\classes.dex
+base.3=C\:\\Users\\RIG\\Documents\\GitHub\\TemiTour\\TemiTourCode\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\4\\classes.dex
+base.4=C\:\\Users\\RIG\\Documents\\GitHub\\TemiTour\\TemiTourCode\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\5\\classes.dex
+base.5=C\:\\Users\\RIG\\Documents\\GitHub\\TemiTour\\TemiTourCode\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\7\\classes.dex
+base.6=C\:\\Users\\RIG\\Documents\\GitHub\\TemiTour\\TemiTourCode\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
 path.0=classes.dex
 path.1=0/classes.dex
 path.2=10/classes.dex

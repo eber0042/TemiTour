@@ -47,8 +47,6 @@ enum class XDirection {
 
 }
 
-
-
 enum class YMovement {
     CLOSER,
     FURTHER,
@@ -454,16 +452,16 @@ class MainViewModel @Inject constructor(
 //                        Log.d("DetectStatus", detectionStatus.toString())
 //                        Log.i("DetectData", detectionData.value.distance.toString())
 
-                        if (isDetected && yPosition != YDirection.MISSING) {
+                        if (isDetected && xPosition != XDirection.GONE) {
                             robotController.speak(
-                                "You are $xPosition to me and getting $xMotion", //"You are $yPosition and getting $yMotion",
+                                "$xMotion", //"You are $yPosition and getting $yMotion",
                                 buffer
                             )
                             conditionGate({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
                         }
                         // Ensure to cancel the monitoring job if the loop finishes
                         conditionTimer(
-                            { !(isDetected && yPosition != YDirection.MISSING) },
+                            { !(isDetected && xPosition != XDirection.GONE) },
                             time = 5
                         )
                         job.cancel()
@@ -473,6 +471,7 @@ class MainViewModel @Inject constructor(
             }
         }
 
+        // x-detection
         viewModelScope.launch { // Used to get state for x-direction and motion
             while (true) {
                 // This method will allow play multiple per detection
@@ -517,11 +516,11 @@ class MainViewModel @Inject constructor(
 
                 if (isDetected && previousUserAngle != 0.0 && previousUserAngle != currentUserAngle) {
                     xMotion = when {
-                        currentUserAngle - previousUserAngle > 0.125 -> {
+                        currentUserAngle - previousUserAngle > 0.05 -> {
                             XMovement.LEFTER
                         }
 
-                        currentUserAngle - previousUserAngle < -0.125 -> {
+                        currentUserAngle - previousUserAngle < -0.05 -> {
                             XMovement.RIGHTER
                         }
 
@@ -529,16 +528,15 @@ class MainViewModel @Inject constructor(
                             XMovement.NOWHERE
                         }
                     }
-                } else {
-                    currentUserAngle = 0.0
                 }
 
-                Log.i("STATE", (xPosition).toString())
+                Log.i("STATE", (xMotion).toString())
 
                 job.cancel()
             }
         }
 
+        // y-detection
         viewModelScope.launch { // Used to get state for y-direction and motion
             while (true) {
                 // This method will allow play multiple per detection

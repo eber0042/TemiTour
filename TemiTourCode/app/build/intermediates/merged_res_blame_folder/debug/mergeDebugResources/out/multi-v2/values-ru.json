@@ -4,41 +4,7 @@
             "outputFile": "com.temi.temiSDK.app-mergeDebugResources-58:/values-ru/values-ru.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\nypro\\.gradle\\caches\\transforms-4\\0343bce69ff089b985ffec2fb8cbc44e\\transformed\\foundation-release\\res\\values-ru\\values-ru.xml",
-                    "from": {
-                        "startLines": "2,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "55,143",
-                        "endColumns": "87,90",
-                        "endOffsets": "138,229"
-                    },
-                    "to": {
-                        "startLines": "111,112",
-                        "startColumns": "4,4",
-                        "startOffsets": "11338,11426",
-                        "endColumns": "87,90",
-                        "endOffsets": "11421,11512"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\nypro\\.gradle\\caches\\transforms-4\\9c89ff2a88341f12fcaa37132600bdee\\transformed\\ui-release\\res\\values-ru\\values-ru.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "105,198,281,379,481,573,655,745,833,915,986,1056,1140,1227,1299,1383,1453",
-                        "endColumns": "92,82,97,101,91,81,89,87,81,70,69,83,86,71,83,69,122",
-                        "endOffsets": "193,276,374,476,568,650,740,828,910,981,1051,1135,1222,1294,1378,1448,1571"
-                    },
-                    "to": {
-                        "startLines": "36,37,38,39,40,41,42,99,100,101,102,103,104,106,108,109,110",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "3549,3642,3725,3823,3925,4017,4099,10324,10412,10494,10565,10635,10719,10888,11061,11145,11215",
-                        "endColumns": "92,82,97,101,91,81,89,87,81,70,69,83,86,71,83,69,122",
-                        "endOffsets": "3637,3720,3818,3920,4012,4094,4184,10407,10489,10560,10630,10714,10801,10955,11140,11210,11333"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\nypro\\.gradle\\caches\\transforms-4\\25db64728ef312067a2cef5c00760d75\\transformed\\core-1.13.1\\res\\values-ru\\values-ru.xml",
+                    "source": "C:\\Users\\RIG\\.gradle\\caches\\transforms-4\\25db64728ef312067a2cef5c00760d75\\transformed\\core-1.13.1\\res\\values-ru\\values-ru.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",
@@ -55,7 +21,24 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\nypro\\.gradle\\caches\\transforms-4\\1ed9274bf11cc54ee8c283dfd0d60a8d\\transformed\\material3-release\\res\\values-ru\\values-ru.xml",
+                    "source": "C:\\Users\\RIG\\.gradle\\caches\\transforms-4\\9c89ff2a88341f12fcaa37132600bdee\\transformed\\ui-release\\res\\values-ru\\values-ru.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "105,198,281,379,481,573,655,745,833,915,986,1056,1140,1227,1299,1383,1453",
+                        "endColumns": "92,82,97,101,91,81,89,87,81,70,69,83,86,71,83,69,122",
+                        "endOffsets": "193,276,374,476,568,650,740,828,910,981,1051,1135,1222,1294,1378,1448,1571"
+                    },
+                    "to": {
+                        "startLines": "36,37,38,39,40,41,42,99,100,101,102,103,104,106,108,109,110",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "3549,3642,3725,3823,3925,4017,4099,10324,10412,10494,10565,10635,10719,10888,11061,11145,11215",
+                        "endColumns": "92,82,97,101,91,81,89,87,81,70,69,83,86,71,83,69,122",
+                        "endOffsets": "3637,3720,3818,3920,4012,4094,4184,10407,10489,10560,10630,10714,10801,10955,11140,11210,11333"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\RIG\\.gradle\\caches\\transforms-4\\1ed9274bf11cc54ee8c283dfd0d60a8d\\transformed\\material3-release\\res\\values-ru\\values-ru.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -72,7 +55,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\nypro\\.gradle\\caches\\transforms-4\\63f53cd0167cee89f95883e21c6aeae4\\transformed\\appcompat-1.6.1\\res\\values-ru\\values-ru.xml",
+                    "source": "C:\\Users\\RIG\\.gradle\\caches\\transforms-4\\63f53cd0167cee89f95883e21c6aeae4\\transformed\\appcompat-1.6.1\\res\\values-ru\\values-ru.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -86,6 +69,23 @@
                         "startOffsets": "105,220,322,421,507,612,733,812,888,980,1074,1169,1262,1357,1451,1547,1642,1734,1826,1915,2021,2128,2226,2335,2442,2556,2722,10806",
                         "endColumns": "114,101,98,85,104,120,78,75,91,93,94,92,94,93,95,94,91,91,88,105,106,97,108,106,113,165,99,81",
                         "endOffsets": "215,317,416,502,607,728,807,883,975,1069,1164,1257,1352,1446,1542,1637,1729,1821,1910,2016,2123,2221,2330,2437,2551,2717,2817,10883"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\RIG\\.gradle\\caches\\transforms-4\\0343bce69ff089b985ffec2fb8cbc44e\\transformed\\foundation-release\\res\\values-ru\\values-ru.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,143",
+                        "endColumns": "87,90",
+                        "endOffsets": "138,229"
+                    },
+                    "to": {
+                        "startLines": "111,112",
+                        "startColumns": "4,4",
+                        "startOffsets": "11338,11426",
+                        "endColumns": "87,90",
+                        "endOffsets": "11421,11512"
                     }
                 }
             ]
