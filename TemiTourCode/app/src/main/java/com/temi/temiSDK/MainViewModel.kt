@@ -97,12 +97,12 @@ class MainViewModel @Inject constructor(
 
                             if (detectionStatus == DetectionStateChangedStatus.DETECTED) {
                                 robotController.speak(
-                                    "Hi there, I am Temi. What can I do for you today?",
+                                    "Hi there, I am Temi. I am going to Kill you.",
                                     buffer
                                 )
                                 conditionGate({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
 
-                                robotController.speak("Wow, that is really interesting", buffer)
+                                robotController.speak("Why are you running", buffer)
                                 conditionGate({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
                             }
                         }
@@ -352,12 +352,12 @@ class MainViewModel @Inject constructor(
 //                                }
 //                            }
 
-                            Log.i("currentUserAngle", (currentUserDistance).toString())
-                            Log.i("previousUserAngle", (previousUserDistance).toString())
-                            Log.i(
-                                "Direction",
-                                (currentUserDistance - previousUserDistance).toString()
-                            )
+//                            Log.i("currentUserAngle", (currentUserDistance).toString())
+//                            Log.i("previousUserAngle", (previousUserDistance).toString())
+//                            Log.i(
+//                                "Direction",
+//                                (currentUserDistance - previousUserDistance).toString()
+//                            )
                             when {
                                 currentUserDistance - previousUserDistance > 0.04 -> {
                                     Log.i("Type", "going away")
@@ -434,37 +434,37 @@ class MainViewModel @Inject constructor(
                     }
 
                     State.NULL -> {
-                        // This method will allow play multiple per detection
-                        var isDetected = false
-
-                        // Launch a coroutine to monitor detectionStatus
-                        val job = launch {
-                            detectionStatus.collect { status ->
-                                if (status == DetectionStateChangedStatus.DETECTED) {
-                                    isDetected = true
-                                    buffer()
-                                } else {
-                                    isDetected = false
-                                }
-                            }
-                        }
-
-//                        Log.d("DetectStatus", detectionStatus.toString())
-//                        Log.i("DetectData", detectionData.value.distance.toString())
-
-                        if (isDetected && xPosition != XDirection.GONE) {
-                            robotController.speak(
-                                "$xMotion", //"You are $yPosition and getting $yMotion",
-                                buffer
-                            )
-                            conditionGate({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
-                        }
-                        // Ensure to cancel the monitoring job if the loop finishes
-                        conditionTimer(
-                            { !(isDetected && xPosition != XDirection.GONE) },
-                            time = 5
-                        )
-                        job.cancel()
+//                        // This method will allow play multiple per detection
+//                        var isDetected = false
+//
+//                        // Launch a coroutine to monitor detectionStatus
+//                        val job = launch {
+//                            detectionStatus.collect { status ->
+//                                if (status == DetectionStateChangedStatus.DETECTED) {
+//                                    isDetected = true
+//                                    buffer()
+//                                } else {
+//                                    isDetected = false
+//                                }
+//                            }
+//                        }
+//
+////                        Log.d("DetectStatus", detectionStatus.toString())
+////                        Log.i("DetectData", detectionData.value.distance.toString())
+//
+//                        if (isDetected && xPosition != XDirection.GONE) {
+//                            robotController.speak(
+//                                "$xMotion", //"You are $yPosition and getting $yMotion",
+//                                buffer
+//                            )
+//                            conditionGate({ ttsStatus.value.status != TtsRequest.Status.COMPLETED })
+//                        }
+//                        // Ensure to cancel the monitoring job if the loop finishes
+//                        conditionTimer(
+//                            { !(isDetected && xPosition != XDirection.GONE) },
+//                            time = 5
+//                        )
+//                        job.cancel()
                     }
                 }
                 buffer() // Add delay to ensure system work properly
@@ -499,35 +499,52 @@ class MainViewModel @Inject constructor(
 
                 if (isDetected && previousUserDistance != 0.0) { //&& previousUserDistance != 0.0 && previousUserDistance == currentUserDistance) {
                     // logic for close or far position
-                            when {
-                                currentUserAngle > 0.1 -> {
-                                    xPosition = XDirection.LEFT
-                                }
-                                currentUserAngle < -0.1 -> {
-                                    xPosition = XDirection.RIGHT
-                                }
-                                else -> {
-                                    xPosition = XDirection.MIDDLE
-                                }
-                            }
+                    Log.i("STATE", (yPosition).toString())
+                    xPosition = when {
+                        currentUserAngle > 0.1 -> {
+                            XDirection.LEFT
+                        }
+
+                        currentUserAngle < -0.1 -> {
+                            XDirection.RIGHT
+                        }
+
+                        else -> {
+                            XDirection.MIDDLE
+                        }
+                    }
                 } else {
                     xPosition = XDirection.GONE
                 }
 
                 if (isDetected && previousUserAngle != 0.0 && previousUserAngle != currentUserAngle) {
-                    xMotion = when {
-                        currentUserAngle - previousUserAngle > 0.05 -> {
-                            XMovement.LEFTER
-                        }
 
-                        currentUserAngle - previousUserAngle < -0.05 -> {
-                            XMovement.RIGHTER
+                        when (yPosition) {
+                            YDirection.FAR -> {
+                                xMotion = when {
+                                    currentUserAngle - previousUserAngle > 0.07 -> XMovement.LEFTER
+                                    currentUserAngle - previousUserAngle < -0.07 -> XMovement.RIGHTER
+                                    else -> XMovement.NOWHERE
+                                }
+                            }
+                            YDirection.MIDRANGE -> {
+                                xMotion = when {
+                                    currentUserAngle - previousUserAngle > 0.12 -> XMovement.LEFTER
+                                    currentUserAngle - previousUserAngle < -0.12 -> XMovement.RIGHTER
+                                    else -> XMovement.NOWHERE
+                                }
+                            }
+                            YDirection.CLOSE -> {
+                                xMotion = when {
+                                    currentUserAngle - previousUserAngle > 0.17 -> XMovement.LEFTER
+                                    currentUserAngle - previousUserAngle < -0.17 -> XMovement.RIGHTER
+                                    else -> XMovement.NOWHERE
+                                }
+                            }
+                            YDirection.MISSING -> {
+                                XMovement.NOWHERE
+                            }
                         }
-
-                        else -> {
-                            XMovement.NOWHERE
-                        }
-                    }
                 }
 
                 Log.i("STATE", (xMotion).toString())
