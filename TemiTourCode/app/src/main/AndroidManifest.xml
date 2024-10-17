@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.SETTINGS"/>
     <application
         android:name=".MainApplication"
         android:allowBackup="true"
@@ -27,6 +26,9 @@
         <meta-data
             android:name="com.robotemi.sdk.metadata.SKILL"
             android:value="@string/app_name" />
+        <meta-data
+            android:name="@string/metadata_permissions"
+            android:value="com.robotemi.permission.settings" />
     </application>
 
 </manifest>

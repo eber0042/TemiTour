@@ -8,7 +8,6 @@
         android:minSdkVersion="23"
         android:targetSdkVersion="34" />
 
-    <uses-permission android:name="android.permission.SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <queries>
@@ -53,6 +52,9 @@
         <meta-data
             android:name="com.robotemi.sdk.metadata.SKILL"
             android:value="@string/app_name" />
+        <meta-data
+            android:name="@string/metadata_permissions"
+            android:value="com.robotemi.permission.settings" />
 
         <provider
             android:name="com.robotemi.sdk.TemiSdkContentProvider"
